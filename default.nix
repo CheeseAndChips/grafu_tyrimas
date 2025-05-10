@@ -29,6 +29,7 @@ pkgs.stdenv.mkDerivation {
     networkx
     matplotlib
     numpy
+    tqdm
   ]);
   buildPhase = ''
     mkdir -p .cache/latex
