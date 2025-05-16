@@ -13,45 +13,33 @@ class SimulationSettings:
     n: int
     p: float
     graph_count: int
-    max_retries: int
     root_seed: int
 
 @dataclass
-class GeneratorState:
-    retries_left: int
-    rng_state: np.random.Generator
-
-@dataclass
 class Result:
-    edge_count: int
+    graph_node_count: int
+    graph_edge_count: int
+    visited_edge_count: int
     cycle_count: int
 
-def generate_graph(n, p, generator_state: GeneratorState) -> nx.Graph | None:
-    while generator_state.retries_left > 0:
-        G = nx.gnp_random_graph(n, p, seed=generator_state.rng_state)
-        if nx.is_connected(G):
-            return G
-        else:
-            generator_state.retries_left -= 1
-    return None
+def generate_graph(n, p, gen) -> nx.Graph:
+    G = nx.gnp_random_graph(n, p, seed=gen)
+    component = max(nx.connected_components(G), key=len)
+    Gp = G.subgraph(component)
+    return Gp
 
 def run_simulation(settings: SimulationSettings):
-    generator_state = GeneratorState(
-        settings.max_retries,
-        np.random.default_rng([settings.i, settings.root_seed])
-    )
+    generator_state = np.random.default_rng([settings.i, settings.root_seed])
     results = []
     for _ in range(settings.graph_count):
         G = generate_graph(settings.n, settings.p, generator_state)
-        if G is None:
-            return None
-        edge_count = 0
+        visited_edge_count = 0
         cycle_count = 0
         for chain in nx.chain_decomposition(G):
             if chain[0][0] == chain[-1][1]:
                 cycle_count += 1
-            edge_count += len(chain)
-        results.append(Result(edge_count, cycle_count))
+            visited_edge_count += len(chain)
+        results.append(Result(len(G.nodes), len(G.edges), visited_edge_count, cycle_count))
     return results
 
 if __name__ == '__main__':
@@ -62,13 +50,12 @@ if __name__ == '__main__':
     assert len(n_space) == len(set(n_space))
     print(n_space)
 
-    graph_count = 1000
-    max_retries = graph_count
+    graph_count = 100
     root_seed = 1337
 
     def prepare_and_solve(args):
         i, (n, p) = args
-        settings = SimulationSettings(i, n, p, graph_count, max_retries, root_seed)
+        settings = SimulationSettings(i, n, p, graph_count, root_seed)
         return (i, n, p, run_simulation(settings))
 
     results = []
