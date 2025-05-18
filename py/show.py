@@ -9,7 +9,7 @@ if __name__ == '__main__':
         (settings, data) = pickle.load(f)
 
     dtype = np.dtype([('n', np.int64), ('p', np.float64), ('r', np.float64)])
-    
+
     d = np.array(
         [(n, p, (np.average([r.graph_node_count for r in results])) / n) for i, n, p, results in data],
         dtype=dtype
@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
     n, p, r = d['n'], d['p'], d['r']
 
+    plt.subplot(2, 2, 1)
     plt.pcolormesh(n, p, r, shading='auto')
     plt.xscale('log')
     plt.yscale('log')
@@ -30,8 +31,9 @@ if __name__ == '__main__':
     p_values = line(n_space)
 
     plt.plot(n_space, p_values, color='red', linewidth=2, label='y = x')
-    plt.show()
+    # plt.show()
 
+    plt.subplot(2, 2, 2)
     v = np.array(
         [np.average([int(r.cycle_count == 1) for r in results]) for _, n, p, results in data],
         dtype=np.float64
@@ -40,8 +42,9 @@ if __name__ == '__main__':
     plt.xscale('log')
     plt.yscale('log')
     plt.title('How many graphs are 2-connected')
-    plt.show()
+    # plt.show()
 
+    plt.subplot(2, 2, 3)
     v = np.array(
         [np.average([
             ((r.graph_edge_count - r.visited_edge_count) / r.graph_edge_count if r.graph_edge_count != 0 else 0)
