@@ -4,25 +4,6 @@ pkgs.stdenv.mkDerivation {
   name = "pdf";
   src = ./.;
   buildInputs = with pkgs; [
-    # tex pkgs
-    (texlive.combine {
-      inherit (texlive)
-        scheme-basic
-        latexmk
-        beamer
-        pgf
-        caption
-        babel
-        babel-lithuanian
-        lithuanian
-        metafont
-        hyphen-lithuanian
-        algorithms
-        algorithmicx
-        algpseudocodex;
-    })
-    zathura
-    # python pkgs
     python312
   ] ++ (with pkgs.python312Packages; [
     ipython
