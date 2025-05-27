@@ -11,7 +11,6 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        packages.py = pkgs.callPackage ./default.nix { };
-        packages.tex_doc = pkgs.callPackage ./doc/default.nix { };
+        packages.default = pkgs.callPackage ./default.nix { };
       });
 }

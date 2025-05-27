@@ -12,6 +12,7 @@
 %\PrerenderUnicode{ąčęėįšųūž}
 \usepackage[\LTfontencoding]{fontenc}
 \usepackage[T1]{fontenc}
+\providecommand{\mathdefault}[1]{#1}
 
 
 \usepackage{geometry}
@@ -30,6 +31,7 @@
 \usetikzlibrary{arrows, automata}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{algpseudocode}
 \usepackage{wrapfig}
 \usepackage{graphicx}
 \usepackage{float}
@@ -51,16 +53,16 @@
          \textbf{Informatikos institutas}\\
         
         \vspace{6.5cm}
-        \textbf{Vardenis Pavardenis}\\
+        \textbf{Joris Pevcevičius}\\
        \textit{ informatikos specialybė, \\
-                 II kursas, NN grupė\\}
+                 III kursas, 1 grupė\\}
         
-        \textbf{Sunkiausios komponentės paieška}\\
+        \textbf{Ausų algoritmo taikymas}\\
           
                  
  
         \vfill
-        Vilnius -- 2023
+        Vilnius -- 2025
     \end{center}
 \end{titlepage}
 \tableofcontents
@@ -68,63 +70,41 @@
 \section*{Įvadas}
 \label{sec:ivadas}
 \addcontentsline{toc}{section}{\nameref{sec:ivadas}}
-Šiame darbe tiriama grafų GGGGGG klasė naudojant  NNNNNNN algoritmą .....
-<aprašoma glaustai grafų klasė, tirimo tikslas, etapai, instrumentai ....  >
+Šiame darbe tiriama grafų $G_{n,p}$ klasė naudojant chain decomposition algoritmą \citep{schmidt2013simple} iš NetworkX bibliotekos. Rezultatai atvaizduojami matplotlib bibliotekos pagalba.
 
 \newpage
 \section{Apibrėžimai. Tiriamoji grafų klasė}
-<Galima kas tinka permesti iš skaidrių ... apačioje yra pavyzdys ...>
-Kai kurias sąvokas reikės pridėti...
 
-Mums prireiks tam tikrų  sąvokų, žr. pvz \citep{Graf}. 
-\begin{definition}[Svorinis grafas]\citep{Graf}
-Grafas $G=(V,E):\forall e\in E, \exists w:E\to \mathbb{R}^{+}$ vadinamas svoriniu grafu.
-\end{definition}
-
-Labai patartina prieš kiekvieną sąvoką parašyti ,,motyvaciją`` kam ji reikalinga... Tai gerokai pagerina teksto suvokimą ...
-
+Kadangi ne visi sugeneruojami grafai bus jungūs, reikės ieškoti didžiausios jungios komponentės.
 \begin{definition}[Jungi komponentė]\citep{Graf}
 Grafo $G=(V,E)$ jungia komponente vadinsime grafo $G$ porgrafį $H\subseteq G$ tokį, kad $H$ yra jungus grafas, t.y.
 $H=(V_H, E_H): \forall v,u\in V, \exists P(v,u), v\neq u$, kur $P(v,u)$ yra kelias iš viršūnės $v$ į viršūnę $u$.
 \end{definition}
 
-
-\begin{definition}[Minimalus dengiantis medis]\citep{Graf}
-Minimalus dengiantis paprastojo svorinio grafo $G=(V_G, E_G)$ medis $MST(G)$ yra toks medis (jungus grafas neturintis ciklų) $T=(V_T, E_T)$, kad $V_T=V_G$ ir $\sum_{e\in E_T}{w(e)}$ yra mažiausia galima tokia suma.
+\begin{definition}[$G(n,p)$ atsitiktinis grafas]
+Tegu $n \in \mathbb{N}$ ir $p \in [0,1]$. $G(n, p)$ yra tikimybinis modelis neorientuotam grafui su $n$ viršūnių, kur kiekviena skirtingų viršūnių pora $(v_i, v_j)$ yra sujungiama briauna su nepriklausoma tikimybe $p$.
 \end{definition}
 
-\begin{definition}[Svoris ir vidutinis svoris]
-Grafo $G=(V,E)$ svoriu laikysime visų jo briaunų svorių sumą $\sum_{e\in E}{w(e)}$. To paties grafo vidutiniu briaunos svoriu vadinsime šių svorių vidurkį $\frac{\sum_{e\in E}{w(e)}}{\vert V \vert}$.
-\end{definition}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newpage
 \section{Algoritmai}
-<Galima permesti iš skaidrių bazinį algoritmą>
-Algoritmus, kurie padeda atlikti tyrimą, reikėtų suformuluoti papildomai. 
-Prieš kiekvieną formalųjį algoritmą taip pat reikėtų 3-4 ,,motyvacinių`` sakinių,
-žinomų faktų apie jo efektyvumą ir pan.
 
-
-\begin{algorithm}[h]
-    \caption{CCB-FIND}
-    \textbf{Duota:} Paprastasis svorinis grafas $G=(V,E)$\\
-    \textbf{Rasti:} Sunkiausią jungią komponentę CCB
+DFS algoritmas, kuris bus naudojamas
+\begin{algorithm}[h]\citep{CormenIntoAlg}
+    \caption{DFS(G,cc,v,visited)}
     \begin{algorithmic}[1]
-        \STATE $max := -1$
-        \STATE $CCB := Graph()$
-        \STATE $ccs := []$
-        \STATE $ccs := CCs(G)$
-        \FORALL{$T \in ccs$}
-            \STATE $Ti = PRIM(T,V_T[0])$
-            \IF{$W(Ti) > max$}
-                \STATE $CCB = Ti$
+        \STATE $visited[v] := True$
+        \STATE $cc\leftarrow v$
+        \FORALL{$u\in ADJ(v)$}
+            \IF{$visited[u]=False$}
+                \STATE $cc := DFS(G,cc,u,visited)$
             \ENDIF
         \ENDFOR
-        \RETURN $CCB$
+        \RETURN $cc$
     \end{algorithmic}
-\end{algorithm}
+\end{algorithm}    
 
-\begin{algorithm}[h]\citep{slides}
+\begin{algorithm}[h]\citep{CormenIntoAlg}
     \caption{CCs(G)}
     \begin{algorithmic}[1]
         \STATE $ccs := []$
@@ -146,34 +126,77 @@ Prieš kiekvieną formalųjį algoritmą taip pat reikėtų 3-4 ,,motyvacinių``
     \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[h]\citep{GTWA}
-    \caption{DFS(G,cc,v,visited)}
+\begin{algorithm}[h]\citep{schmidt2013simple}
+    \caption{Check}
+    \textbf{Duota:} Grafas $G=(V,E)$\\
+    \textbf{Rasti:} Ar grafas 2-connected, 2-edge-connected, ar nei toks, nei toks.
+
     \begin{algorithmic}[1]
-        \STATE $visited[v] := True$
-        \STATE $cc\leftarrow v$
-        \FORALL{$u\in ADJ(v)$}
-            \IF{$visited[u]=False$}
-                \STATE $cc := DFS(G,cc,u,visited)$
-            \ENDIF
-        \ENDFOR
-        \RETURN $cc$
+        \State Compute a DFS-tree $T$ of $G$
+        \State Compute a chain decomposition $C$; mark every visited edge
+        \If{$G$ contains an unvisited edge} 
+            \State output "\texttt{not 2-edge-connected}"
+        \ElsIf{there is a cycle in $C$ different from $C_1$}
+            \State output "\texttt{2-edge-connected but not 2-connected}"
+        \Else
+            \State output "\texttt{2-connected}"
+        \EndIf
     \end{algorithmic}
-\end{algorithm}    
+\end{algorithm}
+
 \clearpage
 \newpage
 \section{Algoritmų realizacija ir tyrimų eiga}
-Aptariamos realizacijos: naudota programavimo kalba, parinktos duomenų struktūros,
-grafų klasės individualių grafų generavimas ....
+Algoritmo realizacijai naudosime NetworkX bibliotekos implementacija skirta Python kalbai. Konkrečiai bus naudojama \texttt{networkx.chain\_decomposition} funkcija, kuri atiduoda grandinių iteratorių. Grandinė šiuo atveju bus briaunų sąrašas.
 
+Generuosime atsitiktinius $G_{n,p}$ grafus. Pasirinksime aibes $N$ ir $P$, kuriose bus duotos bandomos $n$ ir $p$ reikšmės ir generuosime po $k$ grafų kiekvienai $N \times P$ reikšmei. Kiekvienam grafui $G = (V, E)$ surasime didžiausią jungią komponentę $G' = (V', E')$ ir naudosime chain decomposition algoritmą. Užsaugosime kiek tiltų atrandama grafe $G'$ ir ar grafas $G'$ yra 2-jungus. Taip pat užsaugome pradinio grafo dydį: $|V|, |E|$.
+
+Šiam tyrimui parinksime $|N| = |P| = 100$ ir $k = 1000$. Mažiausia $p$ reikšmė - $10^{-3}$, didžiausia - $0.5$. Mažiausia $n$ reikšmė - $31$, didžiausia - $1000$.
+
+\newpage
 \section{Tyrimų rezultatai ir jų aptarimas}
+Kadangi analizuojame didžiausią jungią komponentę, pavaizduojame kokia dalis grafo višūnių pateks į galutinę komponentę ir surasime šių reikšmių aritmetinį vidurkį visiems $k$ grafų. Analogiškai pavaizduojame kokia dalis sugeneruotų komponenčių yra 2-jungios. Komponentės dydį lyginame su funkcija $p = \frac{\ln n}{n}$, nes tai yra $G_{n,p}$ grafų jungumo riba. \citep{erd6s1960evolution}
+
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+        \begin{center}
+            \includegraphics{./plots/plot1.pdf}
+        \end{center}
+        \caption{grafo komponentės dydis ir funkcija $p = \frac{\ln n}{n}$}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \begin{center}
+            \includegraphics{./plots/plot2.pdf}
+        \end{center}
+        \caption{dalis grafų, kurie yra 2-jungūs}
+    \end{subfigure}
+    \caption{}
+\end{figure}
+
+Pavaizduojame kokia dalis grafo komponentės briaunų yra tiltai. Kadangi prie pereinamosios ribos tikėtina, kad bus pastebima įvairesni grafai, taip pat pavaizduojame šios dalies standartinį nuokrypį.
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+        \begin{center}
+            \includegraphics{./plots/plot3.pdf}
+        \end{center}
+        \caption{kokia dalis briaunų yra tiltai}
+    \end{subfigure}
+    \begin{subfigure}{.5\textwidth}
+        \begin{center}
+            \includegraphics{./plots/plot4.pdf}
+        \end{center}
+        \caption{tiltų dalies standartinis nuokrypis}
+    \end{subfigure}
+    \caption{}
+\end{figure}
+
 \newpage 
 \section*{Išvados}
 \label{sec:isvados}
 \addcontentsline{toc}{section}{\nameref{sec:isvados}}
-Šiame darbe mes atlikome ... tyrimus. Po jų analizės priėjome tokių išvadų:
-
 \begin{itemize}
-\item išvada
+    \item{Pastebėta pereinamoji juosta, kurioje komponentės tampa mažiau jungios. Nepanašu, kad juosta sektų $p = \frac{\ln n}{n}$.}
+    \item{Toje pačioje juostoje pastebimas didelis tiltų dalies standartinis nuokrypis.}
 \end{itemize}
 
 \newpage 
