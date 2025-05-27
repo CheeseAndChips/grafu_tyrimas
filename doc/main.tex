@@ -1,0 +1,218 @@
+\documentclass[bibliography=totoc]{article}
+\usepackage{titling}
+\usepackage{listings}
+%\usepackage[nottoc,numbib]{tocbibind}
+\usepackage[nottoc]{tocbibind}
+
+%\documentclass[bibliography=totoc]{scrartcl}
+
+\usepackage[lithuanian]{babel}
+\usepackage[utf8]{inputenc}
+\def\LTfontencoding{L7x}
+%\PrerenderUnicode{ąčęėįšųūž}
+\usepackage[\LTfontencoding]{fontenc}
+\usepackage[T1]{fontenc}
+
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage{natbib}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{tikz}
+\usetikzlibrary{arrows, automata}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\newtheorem{definition}{Apibrėžimas}
+\newtheorem{example}{Pavyzdys}
+\newtheorem{experiment}{Grafas}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+ 
+        \Huge
+        \textbf{Vilniaus Universitetas}\\
+         \textbf{Informatikos institutas}\\
+        
+        \vspace{6.5cm}
+        \textbf{Vardenis Pavardenis}\\
+       \textit{ informatikos specialybė, \\
+                 II kursas, NN grupė\\}
+        
+        \textbf{Sunkiausios komponentės paieška}\\
+          
+                 
+ 
+        \vfill
+        Vilnius -- 2023
+    \end{center}
+\end{titlepage}
+\tableofcontents
+\newpage
+\section*{Įvadas}
+\label{sec:ivadas}
+\addcontentsline{toc}{section}{\nameref{sec:ivadas}}
+Šiame darbe tiriama grafų GGGGGG klasė naudojant  NNNNNNN algoritmą .....
+<aprašoma glaustai grafų klasė, tirimo tikslas, etapai, instrumentai ....  >
+
+\newpage
+\section{Apibrėžimai. Tiriamoji grafų klasė}
+<Galima kas tinka permesti iš skaidrių ... apačioje yra pavyzdys ...>
+Kai kurias sąvokas reikės pridėti...
+
+Mums prireiks tam tikrų  sąvokų, žr. pvz \citep{Graf}. 
+\begin{definition}[Svorinis grafas]\citep{Graf}
+Grafas $G=(V,E):\forall e\in E, \exists w:E\to \mathbb{R}^{+}$ vadinamas svoriniu grafu.
+\end{definition}
+
+Labai patartina prieš kiekvieną sąvoką parašyti ,,motyvaciją`` kam ji reikalinga... Tai gerokai pagerina teksto suvokimą ...
+
+\begin{definition}[Jungi komponentė]\citep{Graf}
+Grafo $G=(V,E)$ jungia komponente vadinsime grafo $G$ porgrafį $H\subseteq G$ tokį, kad $H$ yra jungus grafas, t.y.
+$H=(V_H, E_H): \forall v,u\in V, \exists P(v,u), v\neq u$, kur $P(v,u)$ yra kelias iš viršūnės $v$ į viršūnę $u$.
+\end{definition}
+
+
+\begin{definition}[Minimalus dengiantis medis]\citep{Graf}
+Minimalus dengiantis paprastojo svorinio grafo $G=(V_G, E_G)$ medis $MST(G)$ yra toks medis (jungus grafas neturintis ciklų) $T=(V_T, E_T)$, kad $V_T=V_G$ ir $\sum_{e\in E_T}{w(e)}$ yra mažiausia galima tokia suma.
+\end{definition}
+
+\begin{definition}[Svoris ir vidutinis svoris]
+Grafo $G=(V,E)$ svoriu laikysime visų jo briaunų svorių sumą $\sum_{e\in E}{w(e)}$. To paties grafo vidutiniu briaunos svoriu vadinsime šių svorių vidurkį $\frac{\sum_{e\in E}{w(e)}}{\vert V \vert}$.
+\end{definition}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Algoritmai}
+<Galima permesti iš skaidrių bazinį algoritmą>
+Algoritmus, kurie padeda atlikti tyrimą, reikėtų suformuluoti papildomai. 
+Prieš kiekvieną formalųjį algoritmą taip pat reikėtų 3-4 ,,motyvacinių`` sakinių,
+žinomų faktų apie jo efektyvumą ir pan.
+
+
+\begin{algorithm}[h]
+    \caption{CCB-FIND}
+    \textbf{Duota:} Paprastasis svorinis grafas $G=(V,E)$\\
+    \textbf{Rasti:} Sunkiausią jungią komponentę CCB
+    \begin{algorithmic}[1]
+        \STATE $max := -1$
+        \STATE $CCB := Graph()$
+        \STATE $ccs := []$
+        \STATE $ccs := CCs(G)$
+        \FORALL{$T \in ccs$}
+            \STATE $Ti = PRIM(T,V_T[0])$
+            \IF{$W(Ti) > max$}
+                \STATE $CCB = Ti$
+            \ENDIF
+        \ENDFOR
+        \RETURN $CCB$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[h]\citep{slides}
+    \caption{CCs(G)}
+    \begin{algorithmic}[1]
+        \STATE $ccs := []$
+        \STATE $visited := []$
+        \FORALL{$v\in G$}
+            \STATE $visited \leftarrow False$
+        \ENDFOR
+        \FORALL{$v\in G$}
+            \IF{$visited[v]=False$}
+                \STATE $cc := []$
+                \STATE $ccs \leftarrow DFS(G,cc,v,visited)$
+            \ENDIF
+        \ENDFOR
+        \STATE $CCS := []$
+        \FORALL{$c \in ccs$}
+            \STATE $CCS\leftarrow Graph(G,ccs)$
+        \ENDFOR
+        \RETURN $ccs$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[h]\citep{GTWA}
+    \caption{DFS(G,cc,v,visited)}
+    \begin{algorithmic}[1]
+        \STATE $visited[v] := True$
+        \STATE $cc\leftarrow v$
+        \FORALL{$u\in ADJ(v)$}
+            \IF{$visited[u]=False$}
+                \STATE $cc := DFS(G,cc,u,visited)$
+            \ENDIF
+        \ENDFOR
+        \RETURN $cc$
+    \end{algorithmic}
+\end{algorithm}    
+\clearpage
+\newpage
+\section{Algoritmų realizacija ir tyrimų eiga}
+Aptariamos realizacijos: naudota programavimo kalba, parinktos duomenų struktūros,
+grafų klasės individualių grafų generavimas ....
+
+\section{Tyrimų rezultatai ir jų aptarimas}
+\newpage 
+\section*{Išvados}
+\label{sec:isvados}
+\addcontentsline{toc}{section}{\nameref{sec:isvados}}
+Šiame darbe mes atlikome ... tyrimus. Po jų analizės priėjome tokių išvadų:
+
+\begin{itemize}
+\item išvada
+\end{itemize}
+
+\newpage 
+\bibliographystyle{plain}
+\bibliography{reference}
+\newpage 
+\appendix
+\section*{Priedai. Kodas}
+\label{sec:priedas}
+\addcontentsline{toc}{section}{\nameref{sec:priedas}}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{1,1,1}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+main.py
+\lstinputlisting[language=Python]{../py/main.py}
+show.py
+\lstinputlisting[language=Python]{../py/show.py}
+
+
+\end{document}
+
