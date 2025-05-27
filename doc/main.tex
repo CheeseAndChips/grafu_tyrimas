@@ -31,7 +31,7 @@
 \usetikzlibrary{arrows, automata}
 \usepackage{algorithm}
 \usepackage{algorithmic}
-\usepackage{algpseudocode}
+% \usepackage{algpseudocode}
 \usepackage{wrapfig}
 \usepackage{graphicx}
 \usepackage{float}
@@ -132,15 +132,15 @@ DFS algoritmas, kuris bus naudojamas
     \textbf{Rasti:} Ar grafas 2-connected, 2-edge-connected, ar nei toks, nei toks.
 
     \begin{algorithmic}[1]
-        \State Compute a DFS-tree $T$ of $G$
-        \State Compute a chain decomposition $C$; mark every visited edge
-        \If{$G$ contains an unvisited edge} 
-            \State output "\texttt{not 2-edge-connected}"
-        \ElsIf{there is a cycle in $C$ different from $C_1$}
-            \State output "\texttt{2-edge-connected but not 2-connected}"
-        \Else
-            \State output "\texttt{2-connected}"
-        \EndIf
+        \STATE Compute a DFS-tree $T$ of $G$
+        \STATE Compute a chain decomposition $C$; mark every visited edge
+        \IF{$G$ contains an unvisited edge} 
+            \STATE output "\texttt{not 2-edge-connected}"
+        \ELSIF{there is a cycle in $C$ different from $C_1$}
+            \STATE output "\texttt{2-edge-connected but not 2-connected}"
+        \ELSE
+            \STATE output "\texttt{2-connected}"
+        \ENDIF
     \end{algorithmic}
 \end{algorithm}
 
